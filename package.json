@@ -35,7 +35,6 @@
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "google-auth-library": "^8.9.0",
-    "https": "^1.0.0",
     "langchain": "^0.0.150",
     "lucide-react": "^0.274.0",
     "md5": "^2.3.0",
