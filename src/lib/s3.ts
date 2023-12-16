@@ -6,15 +6,14 @@ export async function uploadToS3(
   return new Promise((resolve, reject) => {
     try {
       const s3 = new S3({
-        region: "ap-south-1",
+        region: process.env.NEXT_PUBLIC_S3_REGION,
         credentials: {
           accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID!,
           secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY!,
         },
       });
 
-      const file_key =
-        "uploads/" + Date.now().toString() + file.name.replace(" ", "-");
+      const file_key = `uploads/${Date.now()}-${file.name.replace(/\s/g, '-')}`;
 
       const params = {
         Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
