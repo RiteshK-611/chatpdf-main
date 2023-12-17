@@ -12,6 +12,7 @@
     "@aws-sdk/client-s3": "^3.414.0",
     "@clerk/nextjs": "^4.23.3",
     "@google-ai/generativelanguage": "^0.2.1",
+    "@huggingface/inference": "^1.8.0",
     "@neondatabase/serverless": "^0.6.0",
     "@pinecone-database/doc-splitter": "^0.0.1",
     "@pinecone-database/pinecone": "^1.0.1",
