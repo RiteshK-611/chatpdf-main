@@ -37,6 +37,8 @@ export const getEmbeddings = async (texts: string[]) => {
       model: "embed-multilingual-v2.0",
     });
 
+    console.log("Embeddings: ", vectors.embeddings);
+
     return vectors.embeddings;
   } catch (error) {
     console.log("error calling cohere embedding api", error);
