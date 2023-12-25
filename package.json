@@ -11,7 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.414.0",
     "@clerk/nextjs": "^4.23.3",
-    "@google-ai/generativelanguage": "^0.2.1",
+    "@google/generative-ai": "^0.1.3",
     "@huggingface/inference": "^1.8.0",
     "@neondatabase/serverless": "^0.6.0",
     "@pinecone-database/doc-splitter": "^0.0.1",
@@ -35,7 +35,6 @@
     "encoding": "^0.1.13",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
-    "google-auth-library": "^8.9.0",
     "langchain": "^0.0.150",
     "lucide-react": "^0.274.0",
     "md5": "^2.3.0",
