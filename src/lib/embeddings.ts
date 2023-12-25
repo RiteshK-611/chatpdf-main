@@ -1,3 +1,4 @@
+// #region OpenAI
 // import { OpenAIApi, Configuration } from "openai-edge";
 
 // const config = new Configuration({
@@ -20,28 +21,46 @@
 //     throw error;
 //   }
 // }
+// #endregion
 
-import { CohereClient } from "cohere-ai";
+// #region Cohere
+// import { CohereClient } from "cohere-ai";
 
-// Cohere
-export const getEmbeddings = async (texts: string[]) => {
+// export const getEmbeddings = async (texts: string[]) => {
+//   try {
+//     console.log("Init Cohere");
+//     const cohere = new CohereClient({
+//       token: process.env.COHERE_API_KEY!,
+//     });
+
+//     console.log("Creating Embeddings");
+//     const vectors = await cohere.embed({
+//       texts,
+//       model: "embed-multilingual-v2.0",
+//     });
+
+//     console.log("Embeddings: ", vectors.embeddings);
+
+//     return vectors.embeddings;
+//   } catch (error) {
+//     console.log("error calling cohere embedding api", error);
+//     throw error;
+//   }
+// };
+// #endregion
+
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+
+export async function getEmbeddings(text: string) {
   try {
-    console.log("Init Cohere");
-    const cohere = new CohereClient({
-      token: process.env.COHERE_API_KEY!,
-    });
-
-    console.log("Creating Embeddings");
-    const vectors = await cohere.embed({
-      texts,
-      model: "embed-multilingual-v2.0",
-    });
-
-    console.log("Embeddings: ", vectors.embeddings);
-
-    return vectors.embeddings;
+    const model = genAI.getGenerativeModel({ model: "embedding-001" });
+    const result = await model.embedContent(text);
+    return result.embedding.values;
   } catch (error) {
-    console.log("error calling cohere embedding api", error);
+    console.log("error calling google embeddings api", error);
     throw error;
   }
-};
+}
