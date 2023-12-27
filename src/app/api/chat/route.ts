@@ -325,12 +325,7 @@
 
 // #region Goolge
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {
-  GoogleGenerativeAIStream,
-  HuggingFaceStream,
-  Message,
-  StreamingTextResponse,
-} from "ai";
+import { GoogleGenerativeAIStream, Message, StreamingTextResponse } from "ai";
 import { getContext } from "@/lib/context";
 import { db } from "@/lib/db";
 import { chats, messages as _messages } from "@/lib/db/schema";
@@ -385,15 +380,6 @@ export async function POST(req: Request) {
       `,
     };
 
-    // console.log("Prompt: ", prompt);
-
-    // let msg = [
-    //   prompt,
-    //   ...messages.filter((message: Message) => message.role === "user"),
-    // ]
-
-    // console.log("Messages: ", msg);
-
     const question = `AI assistant is a brand new, powerful, human-like artificial intelligence.
     The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
     AI is a well-behaved and well-mannered individual.
@@ -408,6 +394,8 @@ export async function POST(req: Request) {
     AI assistant will not invent anything that is not drawn directly from the context.
 
     Question: ${lastMessage.content}`;
+
+    console.log("BuildGoogleGenAIPrompt: " + buildGoogleGenAIPrompt(messages));
 
     const geminiStream = await genAI
       .getGenerativeModel({ model: "gemini-pro" })
