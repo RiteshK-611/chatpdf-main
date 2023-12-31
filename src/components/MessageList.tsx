@@ -9,6 +9,17 @@ type Props = {
 };
 
 const MessageList = ({ messages, isLoading }: Props) => {
+  // Example queries
+  const exampleQueries = [
+    "What is the main argument of this document?",
+    "Can you summarize the content of the PDF?",
+    "What are the key points discussed in the conclusion section?",
+    "Who is the author of this document?",
+    "What is the publication date of this document?",
+    "Can you explain the term 'XYZ' mentioned on page 5?",
+    "What does the diagram on page 3 represent?",
+  ];
+
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -16,9 +27,21 @@ const MessageList = ({ messages, isLoading }: Props) => {
       </div>
     );
   }
-  if (!messages) return <></>;
+  if (messages.length === 0)
+    return (
+      <>
+        <div className="p-4 gap-1 flex flex-col justify-center" style={{ height: "calc(100vh - 7.25rem)" }}>
+          <h4 className="font-bold mb-2">Example Queries:</h4>
+          {exampleQueries.map((query, index) => (
+            <p className="rounded-lg px-3 text-sm py-1 shadow-md ring-1 ring-gray-900/10" key={index}>{query}</p>
+          ))}
+        </div>
+      </>
+    );
   return (
-    <div className="flex flex-col gap-2 px-4">
+    <div
+      className="flex flex-col gap-2 px-4 overflow-y-auto"
+      style={{ height: "calc(100vh - 7.25rem)" }}>
       {messages.map((message) => {
         return (
           <div
@@ -26,16 +49,14 @@ const MessageList = ({ messages, isLoading }: Props) => {
             className={cn("flex", {
               "justify-end pl-10": message.role === "user",
               "justify-start pr-10": message.role === "assistant",
-            })}
-          >
+            })}>
             <div
               className={cn(
                 "rounded-lg px-3 text-sm py-1 shadow-md ring-1 ring-gray-900/10",
                 {
                   "bg-blue-600 text-white": message.role === "user",
                 }
-              )}
-            >
+              )}>
               <p>{message.content}</p>
             </div>
           </div>
