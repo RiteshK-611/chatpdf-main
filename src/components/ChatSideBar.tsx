@@ -21,14 +21,14 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   return (
     <div className="w-full max-h-screen soff p-4 text-gray-200 bg-gray-900">
       <Link href="/">
-        <Button className="w-full border-dashed border-white border">
+        <Button className="w-full border-dashed border-white border hover:border-dotted">
           <PlusCircle className="mr-2 w-4 h-4" />
           New Chat
         </Button>
       </Link>
 
-      <ScrollArea
-        className="flex overflow-y-auto flex-col gap-2 mt-4 pr-2.5"
+      <div
+        className="flex overflow-hidden hover:overflow-y-auto flex-col gap-2 mt-4 pr-2.5"
         style={{ height: "calc(100vh - 5.5rem)" }}>
         {chats.map((chat) => (
           <Link key={chat.id} href={`/chat/${chat.id}`}>
@@ -44,7 +44,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
             </div>
           </Link>
         ))} 
-      </ScrollArea>
+      </div>
     </div>
   );
 };
