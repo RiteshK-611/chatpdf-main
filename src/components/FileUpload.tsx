@@ -36,14 +36,15 @@ const FileUpload = () => {
       const file = acceptedFiles[0];
       if (file.size > 10 * 1024 * 1024) {
         // bigger than 10mb!
-        toast.error("File too large");
+        toast.error("File too large (limit: 10MB)");
         return;
       }
 
       try {
         setUploading(true);
         const data = await uploadToS3(file);
-        console.log("meow", data);
+        toast.success("File uploaded successfully!")
+
         if (!data?.file_key || !data.file_name) {
           toast.error("Something went wrong");
           return;
@@ -79,7 +80,7 @@ const FileUpload = () => {
             {/* loading state */}
             <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
             <p className="mt-2 text-sm text-slate-400">
-              Spilling Tea to GPT...
+              Uploading...
             </p>
           </>
         ) : (
