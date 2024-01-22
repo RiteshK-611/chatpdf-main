@@ -10,7 +10,7 @@ export async function getMatchesFromEmbeddings(
       apiKey: process.env.PINECONE_API_KEY!,
       environment: process.env.PINECONE_ENVIRONMENT!,
     });
-    const index = pinecone.Index("chatpdf-google");
+    const index = pinecone.Index(process.env.PINECONE_INDEX!);
     const queryResponse = await index.query({
       topK: 5,
       vector: embeddings,
@@ -42,8 +42,6 @@ export async function getContext(query: string, fileKey: string) {
   };
 
   let docs = qualifyingDocs.map((match) => (match.metadata as Metadata).text);
-
-  console.log("In getContext -> docs: ", docs);
 
   // 5 vectors
   return docs.join("\n").substring(0, 3000);
