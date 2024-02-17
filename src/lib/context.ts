@@ -29,8 +29,8 @@ export async function getContext(query: string, fileKey: string) {
   const queryEmbeddings = await getEmbeddings(query);
   const matches = await getMatchesFromEmbeddings(queryEmbeddings, fileKey);
 
-  console.log("In getContext -> fileKey: ", fileKey);
-  console.log("In getContext -> matches: ", matches);
+  // console.log("In getContext -> fileKey: ", fileKey);
+  // console.log("In getContext -> matches: ", matches);
 
   const qualifyingDocs = matches.filter(
     (match) => match.score && match.score > 0.7
