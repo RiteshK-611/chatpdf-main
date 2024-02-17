@@ -356,15 +356,27 @@ const buildGoogleGenAIPrompt = (messages: Message[], context: string) => {
     Question: ${lastMessage.content}
   `;
 
+  let lastUserIndex = messages
+    .map((message, index) => (message.role === "user" ? index : -1))
+    .reduce((a, b) => Math.max(a, b));
+
   return {
     contents: messages
       .filter(
-        (message) => message.role === "user" || message.role === "assistant"
+        (message) =>
+          message.role === "user" ||
+          message.role === "assistant" ||
+          message.role === "system"
       )
-      .map((message) => ({
+      .map((message, index) => ({
         role: message.role === "user" ? "user" : "model",
         parts: [
-          { text: message.role === "user" ? userMessage : message.content },
+          {
+            text:
+              message.role === "user" && index === messages.length - 1
+                ? userMessage
+                : message.content,
+          },
         ],
       })),
   };
@@ -379,13 +391,19 @@ export async function POST(req: Request) {
     }
     const fileKey = _chats[0].fileKey;
     const lastMessage = messages[messages.length - 1];
+    console.log("Messages content:", messages);
     const context = await getContext(lastMessage.content, fileKey);
 
-    console.log("Context: ", context);
+    console.log(
+      "BuildGoogleGenAIPrompt Content: ",
+      buildGoogleGenAIPrompt(messages, context)
+    );
 
     const geminiStream = await genAI
       .getGenerativeModel({ model: "gemini-pro" })
       .generateContentStream(buildGoogleGenAIPrompt(messages, context));
+
+    console.log("Gemini: " + geminiStream);
 
     // Convert the response into a friendly text-stream
     const stream = GoogleGenerativeAIStream(geminiStream, {
