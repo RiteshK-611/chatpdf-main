@@ -394,16 +394,14 @@ export async function POST(req: Request) {
     console.log("Messages content:", messages);
     const context = await getContext(lastMessage.content, fileKey);
 
-    console.log(
-      "BuildGoogleGenAIPrompt Content: ",
-      buildGoogleGenAIPrompt(messages, context)
-    );
+    // console.log(
+    //   "BuildGoogleGenAIPrompt Content: ",
+    //   buildGoogleGenAIPrompt(messages, context)
+    // );
 
     const geminiStream = await genAI
       .getGenerativeModel({ model: "gemini-pro" })
       .generateContentStream(buildGoogleGenAIPrompt(messages, context));
-
-    console.log("Gemini: " + geminiStream);
 
     // Convert the response into a friendly text-stream
     const stream = GoogleGenerativeAIStream(geminiStream, {
@@ -415,7 +413,7 @@ export async function POST(req: Request) {
           role: "user",
         });
       },
-      onCompletion: async (completion) => {
+      onCompletion: async (completion: string) => {
         // save ai message into db
         await db.insert(_messages).values({
           chatId,
