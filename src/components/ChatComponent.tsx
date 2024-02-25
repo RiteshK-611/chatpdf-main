@@ -1,13 +1,14 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { useChat } from "ai/react";
 import { Button } from "./ui/button";
-import { Send } from "lucide-react";
+import { Send, MessageCircleX } from "lucide-react";
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Message } from "ai";
+import toast from "react-hot-toast";
 
 type Props = { chatId: number };
 
@@ -22,13 +23,14 @@ const ChatComponent = ({ chatId }: Props) => {
     },
   });
 
-  const { input, handleInputChange, handleSubmit, messages } = useChat({
-    api: "/api/chat",
-    body: {
-      chatId,
-    },
-    initialMessages: data || [],
-  });
+  const { input, handleInputChange, handleSubmit, messages, setMessages } =
+    useChat({
+      api: "/api/chat",
+      body: {
+        chatId,
+      },
+      initialMessages: data || [],
+    });
 
   useEffect(() => {
     const messageContainer = document.getElementById("message-container");
@@ -39,13 +41,29 @@ const ChatComponent = ({ chatId }: Props) => {
       });
     }
   }, [messages]);
+
   return (
-    <div
-      className="relative max-h-screen"
-      id="message-container">
+    <div className="relative max-h-screen" id="message-container">
       {/* header */}
-      <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit">
+      <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit flex items-center justify-between">
         <h3 className="text-xl font-bold">Chat</h3>
+        <span title="Clear Chat">
+          <MessageCircleX
+            className="cursor-pointer text-red-600 disabled:text-green"
+            onClick={async () => {
+              toast.loading("Deleting chat..."); // Display loading toast
+              const res = await axios.post("/api/clear-chat", { chatId });
+              if (res.status === 200) {
+                setMessages([]);
+                toast.dismiss(); // Dismiss the loading toast
+                toast.success("Chat cleared");
+              } else {
+                toast.dismiss(); // Dismiss the loading toast
+                toast.error("Failed to clear chat"); // Display error toast if the request fails
+              }
+            }}
+          />
+        </span>
       </div>
 
       {/* message list */}
