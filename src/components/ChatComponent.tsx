@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Input } from "./ui/input";
 import { useChat } from "ai/react";
 import { Button } from "./ui/button";
@@ -48,21 +48,23 @@ const ChatComponent = ({ chatId }: Props) => {
       <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit flex items-center justify-between">
         <h3 className="text-xl font-bold">Chat</h3>
         <span title="Clear Chat">
-          <MessageCircleX
-            className="cursor-pointer text-red-600 disabled:text-green"
-            onClick={async () => {
-              toast.loading("Deleting chat..."); // Display loading toast
-              const res = await axios.post("/api/clear-chat", { chatId });
-              if (res.status === 200) {
-                setMessages([]);
-                toast.dismiss(); // Dismiss the loading toast
-                toast.success("Chat cleared");
-              } else {
-                toast.dismiss(); // Dismiss the loading toast
-                toast.error("Failed to clear chat"); // Display error toast if the request fails
-              }
-            }}
-          />
+          {messages.length > 0 && (
+            <MessageCircleX
+              className="cursor-pointer text-red-600"
+              onClick={async () => {
+                toast.loading("Deleting chat...");
+                const res = await axios.post("/api/clear-chat", { chatId });
+                if (res.status === 200) {
+                  setMessages([]);
+                  toast.dismiss();
+                  toast.success("Chat cleared");
+                } else {
+                  toast.dismiss();
+                  toast.error("Failed to clear chat");
+                }
+              }}
+            />
+          )}
         </span>
       </div>
 
