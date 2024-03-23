@@ -1,35 +1,32 @@
-![Build and Deploy Full Stack ChatPDF Clone](https://github.com/Elliott-Chong/chatpdf-yt/assets/77007117/7fcee290-ca52-46ee-ae82-3490f505270b)
+# ChatPDF Clone
 
-[Link to YouTube Tutorial](https://www.youtube.com/watch?v=bZFedu-0emE)
+![alt text](image-1.png)
 
-# Overview
+## Technologies and Frameworks
 
-Welcome to the "chatpdf-yt" project, a comprehensive chat application with PDF integration. This project is designed to provide a seamless chat experience where users can upload PDF files, create chats around them, and interact with an AI assistant. The AI assistant uses the OpenAI API to generate responses based on the chat context. The application also includes a subscription feature, where users can subscribe to access premium features. The subscription process is handled using Stripe for payments and webhooks for event processing.
-
-hi this is a test change!
-
-# Technologies and Frameworks
-
-- Next.js
+- Next.js 14.1 (App Router)
 - React
 - TypeScript
-- Tailwind CSS
-- Clerk
-- Drizzle ORM
-- PostgreSQL
-- AWS SDK
-- OpenAI API
-- Stripe
-- Axios
-- Pinecone
-- Drizzle-kit
-- OpenAI Edge
-- Neon Database Serverless
-- Drizzle-orm/neon-http
-- @tanstack/react-query
-- @clerk/nextjs
-- clsx
-- tailwind-merge
+- <b>Database</b>
+  - Drizzle ORM
+  - Neon Database
+  - PostgreSQL
+- <b>AI-related</b>
+  - Pinecone (Vector Database)
+  - Langchain
+  - Google Gemini
+  - Vercel AI SDK
+- <b>User Authentication</b>: Clerk
+- <b>Object Storage</b>: AWS SDK
+- <b>Payment</b>: Stripe SDK
+- <b>Styling</b>: Tailwind CSS
+- <b>Third-Party UI Components</b>
+  - React Dropzone
+  - React Hot Toast
+  - shadcn-ui
+  - Lucide icons
+
+</br>
 
 # Installation
 
@@ -40,18 +37,18 @@ Follow the steps below to install and setup the project:
    Open your terminal and run the following command:
 
    ```bash
-   git clone https://github.com/Elliott-Chong/chatpdf-yt.git
+   git clone https://github.com/RiteshK-611/chatpdf-main.git
    ```
 
 2. **Navigate to the project directory**
 
    ```bash
-   cd chatpdf-yt
+   cd chatpdf-main
    ```
 
 3. **Install Node.js**
 
-   The project requires Node.js version 13.4.19 or later. You can download it from [here](https://nodejs.org/en/download/).
+   The project requires Node.js version 19.9.0 or later. You can download it from [here](https://nodejs.org/en/download/).
 
 4. **Install the required dependencies**
 
@@ -76,5 +73,3 @@ Follow the steps below to install and setup the project:
     ```
 
     Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-
