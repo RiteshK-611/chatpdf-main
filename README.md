@@ -1,7 +1,6 @@
 # ChatPDF Clone
 
-![image](https://github.com/RiteshK-611/chatpdf-main/assets/61982298/8acab08f-8041-4b01-969c-9f0d7fb2397f)
-
+![image](https://github.com/RiteshK-611/chatpdf-main/assets/61982298/2e4e9c10-2930-4180-898e-4307617e6da7)
 
 ## Technologies and Frameworks
 
