@@ -324,19 +324,18 @@
 // #endregion
 
 // #region Goolge
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GoogleGenerativeAIStream, Message, StreamingTextResponse } from "ai";
+import { GoogleGenAI } from "@google/genai";
+import { StreamingTextResponse, Message } from "ai";
 import { getContext } from "@/lib/context";
 import { db } from "@/lib/db";
 import { chats, messages as _messages } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
+// export const runtime = "edge";
+const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-
-// convert messages from the Vercel AI SDK Format to the format that is expected by the Google GenAI SDK
+// Helper to build the prompt for Gemini 2.5 (or newer) using @google/genai
 const buildGoogleGenAIPrompt = (messages: Message[], context: string) => {
   const lastMessage = messages[messages.length - 1];
   const userMessage = `
@@ -356,30 +355,19 @@ const buildGoogleGenAIPrompt = (messages: Message[], context: string) => {
     Question: ${lastMessage.content}
   `;
 
-  let lastUserIndex = messages
-    .map((message, index) => (message.role === "user" ? index : -1))
-    .reduce((a, b) => Math.max(a, b));
+  console.log("In buildGoogleGenAIPrompt -> userMessage: ", userMessage);
 
-  return {
-    contents: messages
-      .filter(
-        (message) =>
-          message.role === "user" ||
-          message.role === "assistant" ||
-          message.role === "system"
-      )
-      .map((message, index) => ({
-        role: message.role === "user" ? "user" : "model",
-        parts: [
-          {
-            text:
-              message.role === "user" && index === messages.length - 1
-                ? userMessage
-                : message.content,
-          },
-        ],
-      })),
-  };
+  // Gemini 2.5 expects an array of Content objects, each with role and parts
+  return [
+    ...messages.slice(0, -1).map((message) => ({
+      role: message.role === "user" ? "user" : "model",
+      parts: [{ text: message.content }],
+    })),
+    {
+      role: "user",
+      parts: [{ text: userMessage }],
+    },
+  ];
 };
 
 export async function POST(req: Request) {
@@ -391,38 +379,42 @@ export async function POST(req: Request) {
     }
     const fileKey = _chats[0].fileKey;
     const lastMessage = messages[messages.length - 1];
-    console.log("Messages content:", messages);
     const context = await getContext(lastMessage.content, fileKey);
 
-    // console.log(
-    //   "BuildGoogleGenAIPrompt Content: ",
-    //   buildGoogleGenAIPrompt(messages, context)
-    // );
+    // Use Gemini 2.0 or latest model
+    const modelName = "gemini-2.5-flash-preview-04-17";
+    const stream = await genAI.models.generateContentStream({
+      model: modelName,
+      contents: buildGoogleGenAIPrompt(messages, context),
+    });
 
-    const geminiStream = await genAI
-      .getGenerativeModel({ model: "gemini-pro" })
-      .generateContentStream(buildGoogleGenAIPrompt(messages, context));
-
-    // Convert the response into a friendly text-stream
-    const stream = GoogleGenerativeAIStream(geminiStream, {
-      onStart: async () => {
-        // save user message into db
+    // StreamingTextResponse expects a ReadableStream, so we need to convert the async iterator
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        let completion = "";
+        for await (const chunk of stream) {
+          if (chunk.text) {
+            completion += chunk.text;
+            controller.enqueue(encoder.encode(chunk.text));
+          }
+        }
+        // Save user and AI messages to DB after streaming is done
         await db.insert(_messages).values({
           chatId,
           content: lastMessage.content,
           role: "user",
         });
-      },
-      onCompletion: async (completion: string) => {
-        // save ai message into db
         await db.insert(_messages).values({
           chatId,
           content: completion,
           role: "system",
         });
+        controller.close();
       },
     });
-    return new StreamingTextResponse(stream);
+
+    return new StreamingTextResponse(readableStream);
   } catch (error) {
     console.log("Error in getting chat response: ", error);
     throw error;
