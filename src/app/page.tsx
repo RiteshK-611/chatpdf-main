@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { UserButton, auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowRight, LogIn } from "lucide-react";
 import FileUpload from "@/components/FileUpload";
@@ -26,7 +27,18 @@ export default async function Home() {
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
             <h1 className="mr-3 text-5xl font-semibold">Chat with any PDF</h1>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: {
+                    width: "36px",
+                    height: "36px",
+                    borderWidth: "2px",
+                    borderColor: "rgb(203,213,225)",
+                  },
+                },
+              }}
+            />
           </div>
 
           <div className="flex mt-2">
@@ -45,8 +57,8 @@ export default async function Home() {
           </div>
 
           <p className="max-w-xl mt-1 text-lg text-slate-600">
-            Join millions of students, researchers and professionals to instantly
-            answer questions and understand research with AI
+            Join millions of students, researchers and professionals to
+            instantly answer questions and understand research with AI
           </p>
 
           <div className="w-full mt-4">

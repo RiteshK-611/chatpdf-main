@@ -243,9 +243,9 @@ const uploadVec = async (vectors: PineconeRecord[]) => {
     console.log("Init Pinecone");
     const pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
-      environment: process.env.PINECONE_ENVIRONMENT!,
+      // environment: process.env.PINECONE_ENVIRONMENT!,
     });
-    const index = pinecone.Index("chatpdf-google");
+    const index = pinecone.Index(process.env.PINECONE_INDEX!);
 
     console.log("Upserting into Pinecone");
     await index?.upsert(vectors);

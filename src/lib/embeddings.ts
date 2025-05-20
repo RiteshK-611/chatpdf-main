@@ -49,16 +49,24 @@
 // };
 // #endregion
 
+import { GoogleGenAI } from "@google/genai";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
 export async function getEmbeddings(text: string) {
   try {
-    const model = genAI.getGenerativeModel({ model: "embedding-001" });
-    const result = await model.embedContent(text);
-    return result.embedding.values;
+    // Use the latest recommended Gemini embedding model: 'text-embedding-004'
+    // See: https://ai.google.dev/gemini-api/docs/embeddings#embedding-models
+    const result = await genAI.models.embedContent({
+      model: "gemini-embedding-exp-03-07",
+      contents: text,
+      config: {
+        taskType: "RETRIEVAL_DOCUMENT",
+        outputDimensionality: 1536
+      },
+    });
+
+    return result.embeddings![0].values as number[];
   } catch (error) {
     console.log("error calling google embeddings api", error);
     throw error;

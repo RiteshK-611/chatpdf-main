@@ -13,6 +13,9 @@ import { useRouter } from "next/navigation";
 const FileUpload = () => {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false);
+  const [uploadStep, setUploadStep] = React.useState<
+    "uploading" | "loading" | "creating"
+  >("uploading");
   const { mutate, isLoading } = useMutation({
     mutationFn: async ({
       file_key,
@@ -42,13 +45,26 @@ const FileUpload = () => {
 
       try {
         setUploading(true);
+        setUploadStep("uploading");
+        // Step 1: Uploading...
+        await new Promise((res) => setTimeout(res, 5000));
         const data = await uploadToS3(file);
-        toast.success("File uploaded successfully!")
+        toast.success("File uploaded successfully!");
+
+        // Step 2: Loading pdf...
+        setUploadStep("loading");
+        await new Promise((res) => setTimeout(res, 5000));
 
         if (!data?.file_key || !data.file_name) {
           toast.error("Something went wrong");
+          setUploading(false);
           return;
         }
+
+        // Step 3: Creating chat...
+        setUploadStep("creating");
+        await new Promise((res) => setTimeout(res, 5000));
+
         mutate(data, {
           onSuccess: ({ chat_id }) => {
             toast.success("Chat created!");
@@ -59,6 +75,11 @@ const FileUpload = () => {
             console.error(err);
           },
         });
+
+        // Loop back to Uploading... if still uploading (simulate cycle)
+        setTimeout(() => {
+          if (uploading) setUploadStep("uploading");
+        }, 5000);
       } catch (error) {
         console.log(error);
       } finally {
@@ -72,15 +93,16 @@ const FileUpload = () => {
         {...getRootProps({
           className:
             "border-dashed border-2 rounded-xl cursor-pointer bg-gray-50 py-8 flex justify-center items-center flex-col",
-        })}
-      >
+        })}>
         <input {...getInputProps()} />
         {uploading || isLoading ? (
           <>
             {/* loading state */}
             <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
             <p className="mt-2 text-sm text-slate-400">
-              Uploading...
+              {uploadStep === "uploading" && "Uploading..."}
+              {uploadStep === "loading" && "Loading pdf..."}
+              {uploadStep === "creating" && "Creating chat..."}
             </p>
           </>
         ) : (
