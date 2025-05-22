@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
   // new subscription created
   if (event.type === "checkout.session.completed") {
-    const subscription = await stripe.subscriptionItems.retrieve(
+    const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
     if (!session?.metadata?.userId) {
@@ -33,20 +33,20 @@ export async function POST(req: Request) {
     await db.insert(userSubscriptions).values({
       userId: session.metadata.userId,
       stripeSubscriptionId: subscription.id,
-      stripeCustomerId: session.customer as string,
-      stripePriceId: subscription.price.id,
+      stripeCustomerId: subscription.customer as string,
+      stripePriceId: subscription.items.data[0].price.id,
       stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
     });
   }
 
   if (event.type === "invoice.payment_succeeded") {
-    const subscription = await stripe.subscriptionItems.retrieve(
+    const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
     await db
       .update(userSubscriptions)
       .set({
-        stripePriceId: subscription.price.id,
+        stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000
         ),
